@@ -53,7 +53,7 @@ static void MX_TIM3_Init(void);
 static void MX_TIM16_Init(void);
 static void MX_TIM17_Init(void);
 /* USER CODE BEGIN PFP */
-void TIM16_Update_IRQ(void)
+void TIM16_Update_IRQ(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/

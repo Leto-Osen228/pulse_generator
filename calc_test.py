@@ -8,7 +8,7 @@ b = []
 c = 0
 # psc = a * b
 for i in range(len(Hz)):
-    j = 0
+    j = 32
     psc = core_clock // Hz[i]
     #print(i, psc, Hz[i])
     while (psc >> j) & 1 == 0:

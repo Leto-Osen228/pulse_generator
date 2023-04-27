@@ -25,12 +25,14 @@ typedef enum Stepper_PosType {
 
 class Stepper {
 public:
-	uint32_t pos = 0;
+	int32_t pos = 0;
 	bool dir = 0;
 	Stepper(uint16_t steps, TIM_TypeDef *tim, GPIO *dir, GPIO *en) {
 		_en = en;
 		_dir = dir;
 		_tim = tim;
+
+		_steps = steps;
 	}
 	void init(void) {
 		_en->init();		// init enable gpio
@@ -57,25 +59,30 @@ public:
 		}
 		return 0;
 	}
+	uint16_t get_deg(void){
+		return pos % _steps * 360 / _steps;
+	}
 	void irq_handler(void) {
-		pos += dir ? 1 : -1;
+		pos += dir ? -1 : 1;
 	}
 
 private:
 	TIM_TypeDef *_tim;
-	GPIO *_dir;
-	GPIO *_en;
+	GPIO *_dir_io;
+	GPIO *_en_io;
+
+	uint16_t _steps;
 
 	Stepper_Status _status;
 	bool _ready;
 
 protected:
 	void _enable(void) {
-		_en->set(false);
+		_en_io->set(false);
 		_start_step();
 	}
 	void _disable(void) {
-		_en->set(true);
+		_en_io->set(true);
 		_stop_step();
 	}
 	void _start_step(void) {
