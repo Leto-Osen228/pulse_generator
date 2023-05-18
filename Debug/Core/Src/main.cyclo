@@ -1,21 +1,26 @@
 gpio.hpp:26:2:GPIO::GPIO(GPIO_TypeDef*, uint8_t, GPIO_Type, GPIO_Pull_Mode)	1
 gpio.hpp:35:7:void GPIO::init()	6
 gpio.hpp:45:7:void GPIO::set(bool)	2
-stepper.hpp:30:2:Stepper::Stepper(uint16_t, TIM_TypeDef*, GPIO*, GPIO*)	1
-stepper.hpp:35:7:void Stepper::init()	1
-stepper.hpp:63:7:void Stepper::irq_handler()	2
-stepper.hpp:78:7:void Stepper::_enable()	1
-stepper.hpp:86:7:void Stepper::_start_step()	1
-main.cpp:68:5:int main()	1
-main.cpp:129:6:void SystemClock_Config()	4
-main.cpp:176:13:void MX_I2C1_Init()	4
-main.cpp:221:13:void MX_SPI1_Init()	2
-main.cpp:259:13:void MX_TIM1_Init()	10
-main.cpp:346:13:void MX_TIM3_Init()	6
-main.cpp:400:13:void MX_TIM16_Init()	5
-main.cpp:463:13:void MX_TIM17_Init()	5
-main.cpp:526:13:void MX_GPIO_Init()	1
-main.cpp:581:6:void TIM16_Update_IRQ()	1
-main.cpp:591:6:void Error_Handler()	1
-main.cpp:598:1:void __static_initialization_and_destruction_0(int, int)	3
-main.cpp:598:1:cpp)	1
+gpio.hpp:51:7:bool GPIO::get()	1
+stepper.hpp:35:2:Stepper::Stepper(uint16_t, TIM_TypeDef*, GPIO*, GPIO*)	1
+stepper.hpp:42:7:void Stepper::init()	1
+stepper.hpp:50:7:void Stepper::setPos(int32_t, Stepper_PosType)	3
+stepper.hpp:69:7:void Stepper::setSpeed(int32_t)	1
+stepper.hpp:92:7:void Stepper::irq_handler()	4
+stepper.hpp:116:7:void Stepper::_enable()	1
+stepper.hpp:120:7:void Stepper::_disable()	1
+stepper.hpp:124:7:void Stepper::_start_step()	1
+stepper.hpp:130:7:void Stepper::_stop_step()	1
+main.cpp:62:5:int main()	7
+main.cpp:126:6:void SystemClock_Config()	4
+main.cpp:173:13:void MX_I2C1_Init()	4
+main.cpp:218:13:void MX_SPI1_Init()	2
+main.cpp:256:13:void MX_TIM1_Init()	10
+main.cpp:343:13:void MX_TIM3_Init()	6
+main.cpp:397:13:void MX_TIM16_Init()	5
+main.cpp:457:13:void MX_TIM17_Init()	5
+main.cpp:517:13:void MX_GPIO_Init()	1
+main.cpp:572:6:void TIM16_Update_IRQ()	1
+main.cpp:582:6:void Error_Handler()	1
+main.cpp:589:1:void __static_initialization_and_destruction_0(int, int)	3
+main.cpp:589:1:cpp)	1

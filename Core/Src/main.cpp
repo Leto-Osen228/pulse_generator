@@ -4,10 +4,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "gpio.hpp"
 #include "stepper.hpp"
 /* USER CODE END Includes */
-
+#include "config.h"
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
@@ -34,11 +33,6 @@ TIM_HandleTypeDef htim16;
 TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN PV */
-GPIO led(GPIOE, 8, OUTPUT, NO);
-GPIO btn(GPIOA, 0, INPUT, NO);
-
-GPIO right_dir(RIGHT_STEPPER_DIR, OUTPUT);
-GPIO right_en(RIGHT_STEPPER_EN, OUTPUT);
 
 Stepper right(3200, TIM16, &right_dir, &right_en);
 /* USER CODE END PV */
@@ -100,10 +94,10 @@ int main(void) {
 
 	right.init();
 
-	HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_1);
-	HAL_TIM_OC_Start(&htim17, TIM_CHANNEL_1);
-	TIM16->PSC = 900 - 1;
-	TIM16->ARR = 2 - 1;
+	/*HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_1);
+	HAL_TIM_OC_Start(&htim17, TIM_CHANNEL_1);*/
+	TIM16->ARR = 200 - 1;
+	right.setSpeed(3200);
 
 	bool flag;
 	/* USER CODE END 2 */
@@ -111,10 +105,13 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
-		/*if (btn.get())
-
-		else*/
-
+		if (btn.get() && !flag) {
+			right.setPos(3200, RELATIVE);
+			flag = 1;
+		} else if (!btn.get() && flag) {
+			flag = 0;
+		}
+		HAL_Delay(1);
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -397,124 +394,118 @@ static void MX_TIM3_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_TIM16_Init(void)
-{
+static void MX_TIM16_Init(void) {
 
-  /* USER CODE BEGIN TIM16_Init 0 */
+	/* USER CODE BEGIN TIM16_Init 0 */
 
-  /* USER CODE END TIM16_Init 0 */
+	/* USER CODE END TIM16_Init 0 */
 
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+	TIM_OC_InitTypeDef sConfigOC = { 0 };
+	TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = { 0 };
 
-  /* USER CODE BEGIN TIM16_Init 1 */
+	/* USER CODE BEGIN TIM16_Init 1 */
 
-  /* USER CODE END TIM16_Init 1 */
-  htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 48000-1;
-  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim16.Init.Period = 10-1;
-  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim16.Init.RepetitionCounter = 0;
-  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_OC_Init(&htim16) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_OC_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.BreakFilter = 0;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim16, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM16_Init 2 */
+	/* USER CODE END TIM16_Init 1 */
+	htim16.Instance = TIM16;
+	htim16.Init.Prescaler = 48000 - 1;
+	htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim16.Init.Period = 10 - 1;
+	htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim16.Init.RepetitionCounter = 0;
+	htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim16) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_Init(&htim16) != HAL_OK) {
+		Error_Handler();
+	}
+	sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+	sConfigOC.Pulse = 0;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+	if (HAL_TIM_OC_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+	sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+	sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+	sBreakDeadTimeConfig.DeadTime = 0;
+	sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+	sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+	sBreakDeadTimeConfig.BreakFilter = 0;
+	sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+	if (HAL_TIMEx_ConfigBreakDeadTime(&htim16, &sBreakDeadTimeConfig)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN TIM16_Init 2 */
 
-  /* USER CODE END TIM16_Init 2 */
-  HAL_TIM_MspPostInit(&htim16);
+	/* USER CODE END TIM16_Init 2 */
+	HAL_TIM_MspPostInit(&htim16);
 
 }
 
 /**
-  * @brief TIM17 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM17_Init(void)
-{
+ * @brief TIM17 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM17_Init(void) {
 
-  /* USER CODE BEGIN TIM17_Init 0 */
+	/* USER CODE BEGIN TIM17_Init 0 */
 
-  /* USER CODE END TIM17_Init 0 */
+	/* USER CODE END TIM17_Init 0 */
 
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+	TIM_OC_InitTypeDef sConfigOC = { 0 };
+	TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = { 0 };
 
-  /* USER CODE BEGIN TIM17_Init 1 */
+	/* USER CODE BEGIN TIM17_Init 1 */
 
-  /* USER CODE END TIM17_Init 1 */
-  htim17.Instance = TIM17;
-  htim17.Init.Prescaler = 48000-1;
-  htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim17.Init.Period = 20-1;
-  htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim17.Init.RepetitionCounter = 0;
-  htim17.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim17) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_OC_Init(&htim17) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_OC_ConfigChannel(&htim17, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.BreakFilter = 0;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim17, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM17_Init 2 */
+	/* USER CODE END TIM17_Init 1 */
+	htim17.Instance = TIM17;
+	htim17.Init.Prescaler = 48000 - 1;
+	htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim17.Init.Period = 20 - 1;
+	htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim17.Init.RepetitionCounter = 0;
+	htim17.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim17) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_TIM_OC_Init(&htim17) != HAL_OK) {
+		Error_Handler();
+	}
+	sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+	sConfigOC.Pulse = 0;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+	sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+	if (HAL_TIM_OC_ConfigChannel(&htim17, &sConfigOC, TIM_CHANNEL_1)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+	sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+	sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+	sBreakDeadTimeConfig.DeadTime = 0;
+	sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+	sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+	sBreakDeadTimeConfig.BreakFilter = 0;
+	sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+	if (HAL_TIMEx_ConfigBreakDeadTime(&htim17, &sBreakDeadTimeConfig)
+			!= HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN TIM17_Init 2 */
 
-  /* USER CODE END TIM17_Init 2 */
-  HAL_TIM_MspPostInit(&htim17);
+	/* USER CODE END TIM17_Init 2 */
+	HAL_TIM_MspPostInit(&htim17);
 
 }
 
@@ -578,7 +569,7 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
-void TIM16_Update_IRQ(void){
+void TIM16_Update_IRQ(void) {
 	right.irq_handler();
 	TIM16->SR &= ~1;
 }

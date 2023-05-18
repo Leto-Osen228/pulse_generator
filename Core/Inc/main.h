@@ -129,13 +129,7 @@ extern void TIM16_Update_IRQ(void);
 #define MEMS_INT2_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
-#define BTN GPIOA, 0
 
-#define RIGHT_STEPPER_EN GPIOD, 5
-#define RIGHT_STEPPER_DIR GPIOD, 7
-
-#define LEFT_STEPPER_EN GPIOD, 6
-#define LEFT_STEPPER_DIR GPIOB, 3
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
